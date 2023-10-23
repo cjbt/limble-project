@@ -5,7 +5,7 @@ import { Users } from 'src/app/models/user.model';
 @Injectable({
   providedIn: 'root',
 })
-export class UserMentionsServiceService {
+export class UserMentionsService {
   private trie: Trie;
   private usersMapper: Record<number, string>;
   private cache: Map<string, number[]>;
