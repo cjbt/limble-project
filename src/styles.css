@@ -5,3 +5,7 @@
 body {
   background-color: #FFFEFE;
 }
+
+svg {
+  scale: .8;
+}

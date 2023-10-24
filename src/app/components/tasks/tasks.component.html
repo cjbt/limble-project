@@ -1,11 +1,11 @@
 <div class="w-full max-w-[800px] mx-auto">
   <div class="pt-52"></div>
   <div>
-    <h2>Comments:</h2>
+    <h2 class="font-bold">Comments:</h2>
     <div *ngFor="let comment of comments" class="flex justify-between last:border-b-0 border-b border-[#CCCCCC] pb-1 pt-1">
       <div class="flex">
-        <div>img</div>
-        <p>{{ comment.text }}</p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+        <p [innerHTML]="comment.text"></p>
       </div>
       <div>
         {{ comment.timestamp }}
@@ -14,21 +14,24 @@
   </div>
   
   <div>
-    <form [formGroup]="commentForm" (submit)="onCommentSubmit()">
-      <div class="relative">
-        <div *ngIf="showUserList"  class="absolute bg-[#F9F8F9] bottom-6 py-2">
-          <ul class="overflow-auto">
-            <li *ngFor="let user of userList"
-              class="cursor-pointer hover:bg-[#1263A3] px-4 py-1 hover:text-white overflow-auto"
-              (click)="handleClick(user)">
-              {{ user.name }}</li>
-          </ul>
-        </div>
-        <input id="text" type="text" formControlName="text" class="w-full border-[1px]">
+    <div class="relative">
+      <div *ngIf="showUserList" id="user-list" class="absolute bg-[#F9F8F9] bottom-6 py-2">
+        <ul class="overflow-auto">
+          <li *ngFor="let user of userList"
+            class="cursor-pointer hover:bg-[#1263A3] px-4 py-1 hover:text-white overflow-auto"
+            (click)="handleClick(user)">
+            {{ user.name }}</li>
+        </ul>
       </div>
-      <div class="flex justify-end">
-        <button type="submit">Add Comment</button>
-      </div>
-    </form>
+      <div id="text" contenteditable="true" (input)="onInput($event)" (keydown)="onKeyDown($event)" class="w-full border-[1px]" [innerHTML]></div>
+    </div>
+    <div class="flex justify-end">
+      <button (click)="handleCommentSubmission()" class="flex">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+        Add Comment
+      </button>
+    </div>
   </div>
+
+  <p *ngFor="let systemMessage of systemMessages">{{ systemMessage }}</p>
 </div>

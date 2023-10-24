@@ -37,12 +37,20 @@ export class UserMentionsService {
 
   public search(chars: string) {
     if (chars.trim() === '')
-      return Object.entries(this.usersMapper).map(([key, val]): User => {
-        return {
-          userID: Number(key),
-          name: val,
-        };
-      });
+      return Object.entries(this.usersMapper)
+        .map(([key, val]): User => {
+          return {
+            userID: Number(key),
+            name: val,
+          };
+        })
+        .sort((a: User, b: User) => {
+          if (a.name < b.name) {
+            return -1;
+          }
+
+          return 1;
+        });
 
     const lowerCasedChar = chars.toLocaleLowerCase();
     if (this.cache.has(lowerCasedChar)) {
