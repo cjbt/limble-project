@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TNode, Trie } from './trie';
-import { Users } from 'src/app/models/user.model';
+import { User, Users } from 'src/app/models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -36,11 +36,21 @@ export class UserMentionsService {
   }
 
   public search(chars: string) {
-    if (chars.trim() === '') return Object.values(this.usersMapper).sort();
+    if (chars.trim() === '')
+      return Object.entries(this.usersMapper).map(([key, val]): User => {
+        return {
+          userID: Number(key),
+          name: val,
+        };
+      });
 
     const lowerCasedChar = chars.toLocaleLowerCase();
     if (this.cache.has(lowerCasedChar)) {
-      return this.cache.get(lowerCasedChar)?.map((id) => this.usersMapper[id]);
+      return (
+        this.cache
+          .get(lowerCasedChar)
+          ?.map((id) => ({ userID: id, name: this.usersMapper[id] })) || []
+      );
     }
 
     const node = this.trie.find(lowerCasedChar);
@@ -49,7 +59,7 @@ export class UserMentionsService {
     const userIds: number[] = this.getUserIds(node);
     this.cache.set(lowerCasedChar, userIds);
 
-    return userIds.map((id) => this.usersMapper[id]);
+    return userIds.map((id) => ({ userID: id, name: this.usersMapper[id] }));
   }
 
   private getUserIds(node: TNode, userIds: number[] = []) {
