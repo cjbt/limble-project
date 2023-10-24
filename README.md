@@ -23,3 +23,4 @@ $ npm install
   - input text will remain unstyled
 - Logic is not production ready. Again, only focusing on happy path.
 - This is my first real go at Angular, it's only upwards from here.
+- Could not test fully since I'm using WSL2, no chrome setup
