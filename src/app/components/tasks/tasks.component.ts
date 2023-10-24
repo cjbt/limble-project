@@ -95,11 +95,6 @@ export class TasksComponent {
     }
   }
 
-  userListKeyboardFocus() {
-    if (this.showUserList) {
-    }
-  }
-
   onKeyDown(event: any) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
