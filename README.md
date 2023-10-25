@@ -19,8 +19,7 @@ $ npm install
 - This is a happy path based on requirements
   - Intended for mouse events only; it's missing keyboard interactions
   - Missing accesibility (not part of requirement)
-- `contentEditable` div not fully flushed out due to time
-  - input text will remain unstyled
-- Logic is not production ready. Again, only focusing on happy path.
+- `contentEditable` div not fully flushed out
+  - caret location issues
 - This is my first real go at Angular, it's only upwards from here.
 - Could not test fully since I'm using WSL2, no chrome setup

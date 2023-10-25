@@ -3,10 +3,10 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TasksComponent } from './components/tasks/tasks.component';
+import { CommentsComponent } from './components/comments/comments.component';
 
 @NgModule({
-  declarations: [AppComponent, TasksComponent],
+  declarations: [AppComponent, CommentsComponent],
   imports: [BrowserModule, AppRoutingModule],
   providers: [],
   bootstrap: [AppComponent],
