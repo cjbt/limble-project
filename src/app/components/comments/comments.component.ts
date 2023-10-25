@@ -58,8 +58,7 @@ export class CommentsComponent {
     const words = this.content.split(/\s+/);
     let atSymbolFound = false;
 
-    for (let i = 0; i < words.length; i++) {
-      const word = words[i];
+    words.forEach((word, i) => {
       if (word.startsWith('@')) {
         const inputAfterAtSymbol = word.substring(1);
         atSymbolFound = true;
@@ -76,7 +75,7 @@ export class CommentsComponent {
       } else {
         this.resetUserList();
       }
-    }
+    });
 
     if (!atSymbolFound) {
       this.resetUserList();
@@ -93,28 +92,25 @@ export class CommentsComponent {
   handleCommentSubmission() {
     this.systemMessages = [];
 
+    // Process new comment
     const words = this.content.split(' ');
-    const commentText = [];
-
-    for (let i = 0; i < words.length; i++) {
-      const word = words[i];
+    const commentText = words.map((word, i) => {
       if (this.mentionedUsers.has(i)) {
         const user = this.mentionedUsers.get(i);
         if (user) {
-          commentText.push(
-            this.sanitizer.sanitize(
-              SecurityContext.HTML,
-              `<strong>@${user.name}</strong>`
-            )
+          return this.sanitizer.sanitize(
+            SecurityContext.HTML,
+            `<strong>@${user.name}</strong>`
           );
         } else {
-          commentText.push(word);
+          return word;
         }
       } else {
-        commentText.push(word);
+        return word;
       }
-    }
+    });
 
+    // Add new Comment
     const newComment = {
       id: this.comments.length + 1,
       text: commentText.join(' '),
@@ -122,8 +118,10 @@ export class CommentsComponent {
     };
     this.comments.push(newComment);
 
+    // Reset contentEditable content
     this.content = '';
 
+    // Trigger "external" notification
     this.mentionedUsers.forEach((user) => {
       this.triggerNotification(user);
     });
