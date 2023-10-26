@@ -1,10 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  SecurityContext,
-  ViewChild,
-} from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 
 import { UserMentionsService } from 'src/app/services/user-mentions/user-mentions.service';
 import { User, Users } from 'src/app/models/user.model';
@@ -44,18 +38,16 @@ export class CommentsComponent {
     { userID: 4, name: 'Gabbey' },
   ];
 
-  constructor(
-    private userMentionsService: UserMentionsService,
-    private sanitizer: DomSanitizer
-  ) {
+  static readonly REGEX_WHITESPACES = /\s|&nbsp;|\n|\r\n?/;
+
+  constructor(private userMentionsService: UserMentionsService) {
     userMentionsService.initialize(CommentsComponent.USERS);
   }
 
   onInput(event: Event) {
     this.content = (event.target as HTMLElement).innerHTML;
-    this.setCaretToEnd();
 
-    const words = this.content.split(/\s+/);
+    const words = this.content.split(CommentsComponent.REGEX_WHITESPACES);
     let atSymbolFound = false;
 
     words.forEach((word, i) => {
@@ -80,6 +72,7 @@ export class CommentsComponent {
     if (!atSymbolFound) {
       this.resetUserList();
     }
+    this.setCaretToEnd();
   }
 
   onKeyDown(event: KeyboardEvent) {
@@ -90,47 +83,40 @@ export class CommentsComponent {
   }
 
   handleCommentSubmission() {
+    if (!this.content.length) return;
+
     this.systemMessages = [];
 
     // Process new comment
-    const words = this.content.split(' ');
+    const words = this.content.split(CommentsComponent.REGEX_WHITESPACES);
     const commentText = words.map((word, i) => {
-      if (this.mentionedUsers.has(i)) {
-        const user = this.mentionedUsers.get(i);
-        if (user) {
-          return this.sanitizer.sanitize(
-            SecurityContext.HTML,
-            `<strong>@${user.name}</strong>`
-          );
-        } else {
-          return word;
-        }
-      } else {
-        return word;
-      }
+      if (!this.mentionedUsers.has(i)) return word;
+
+      const user = this.mentionedUsers.get(i);
+      if (!user) return word;
+
+      return `<strong>@${user.name}</strong>`;
     });
 
     // Add new Comment
-    const newComment = {
+    this.comments.push({
       id: this.comments.length + 1,
       text: commentText.join(' '),
       timestamp: 'System',
-    };
-    this.comments.push(newComment);
-
-    // Reset contentEditable content
-    this.content = '';
+    });
 
     // Trigger "external" notification
     this.mentionedUsers.forEach((user) => {
       this.triggerNotification(user);
     });
 
+    // Reset contentEditable content
+    this.content = '';
     this.mentionedUsers.clear();
   }
 
   handleClick(user: User) {
-    if (!this.atLocationIdx) {
+    if (this.atLocationIdx === null) {
       throw new Error('At location index is undefined');
     }
     this.mentionedUsers.set(this.atLocationIdx, user);
@@ -148,9 +134,13 @@ export class CommentsComponent {
   }
 
   private appendAtToAtLocation(name: string) {
-    const commentWords = this.content.split(' ');
+    const commentWords = this.content.split(
+      CommentsComponent.REGEX_WHITESPACES
+    );
 
-    commentWords[this.atLocationIdx as number] = `<strong>@${name}</strong>`;
+    commentWords[
+      this.atLocationIdx as number
+    ] = `<strong>@${name}</strong>&nbsp;`;
     this.content = commentWords.join(' ');
   }
 
@@ -171,14 +161,14 @@ export class CommentsComponent {
     setTimeout(() => {
       const editableDiv = this.editableDiv.nativeElement;
 
-      const strongElements = editableDiv.querySelectorAll('strong');
-      const lastStrongElement = strongElements[strongElements.length - 1];
+      const lastNode =
+        editableDiv.childNodes[editableDiv.childNodes.length - 1];
 
-      if (lastStrongElement) {
+      if (lastNode) {
         const range = document.createRange();
         const selection = window.getSelection()!;
 
-        range.setStartAfter(lastStrongElement);
+        range.setStartAfter(lastNode);
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);

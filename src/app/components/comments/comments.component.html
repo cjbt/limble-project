@@ -23,7 +23,7 @@
             {{ user.name }}</li>
         </ul>
       </div>
-      <div contenteditable="true" (input)="onInput($event)" (keydown)="onKeyDown($event)" class="w-full border-[1px]" [innerHTML]="content" #editableDiv></div>
+      <div contenteditable="true" plaintext-only (input)="onInput($event)" (keydown)="onKeyDown($event)" class="w-full border-[1px]" [innerHTML]="content" #editableDiv></div>
     </div>
     <div class="flex justify-end">
       <button (click)="handleCommentSubmission()" class="flex">
